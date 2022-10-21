@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+const char PLAYER_ONE = 'J';
+const char PLAYER_TWO = 'R';
+
 void red()
 {
     printf("\033[1;31m");
@@ -38,10 +41,10 @@ void displayGrid(char grid[][7])
         printf("| ");
         for (int j = 0; j < 7; j++)
         {
-            grid[i][j] == 'J' ? yellow() : red();
+            grid[i][j] == PLAYER_ONE ? yellow() : red();
             printf("%c", grid[i][j]);
             reset();
-            printf(" | ", grid[i][j]);
+            printf(" | ");
         }
         printf("\n-----------------------------\n");
     }
@@ -79,7 +82,7 @@ int chooseColumn(char grid[][7])
 // Retourne le pion du joueur
 char choosePiece(int cpt)
 {
-    return cpt % 2 ? 'R' : 'J';
+    return cpt % 2 ? PLAYER_TWO : PLAYER_ONE;
 }
 
 // Place le pion dans la grille
