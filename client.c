@@ -24,20 +24,18 @@ int main(int argc, char **argv) {
     char 	buffer[256];
     char *	prog; 			/* nom du programme */
     char *	host; 			/* nom de la machine distante */
-    char *	mesg; 			/* message envoyé */
+    char   mesg[80]; 			/* message envoyé */
      
-    if (argc != 3) {
+    /*if (argc != 3) {
 	perror("usage : client <adresse-serveur> <message-a-transmettre>");
 	exit(1);
-    }
+    }*/
    
     prog = argv[0];
-    host = argv[1];
-    mesg = argv[2];
+    host = "localhost";
     
     printf("nom de l'executable : %s \n", prog);
     printf("adresse du serveur  : %s \n", host);
-    printf("message envoye      : %s \n", mesg);
     
     if ((ptr_host = gethostbyname(host)) == NULL) {
 	perror("erreur : impossible de trouver le serveur a partir de son adresse.");
@@ -83,23 +81,43 @@ int main(int argc, char **argv) {
     
     printf("connexion etablie avec le serveur. \n");
     
-    printf("envoi d'un message au serveur. \n");
+    //printf("envoi d'un message au serveur. \n");
       
     /* envoi du message vers le serveur */
-    if ((write(socket_descriptor, mesg, strlen(mesg))) < 0) {
-	perror("erreur : impossible d'ecrire le message destine au serveur.");
-	exit(1);
-    }
-    
-    /* mise en attente du prgramme pour simuler un delai de transmission */
-    sleep(3);
+    /*while(mesg != "q"){
+        printf("Veuillez saisir un message Elouan : \n");
+        scanf("%s", &mesg);
+        if ((write(socket_descriptor, mesg, strlen(mesg))) < 0) {
+	        perror("erreur : impossible d'ecrire le message destine au serveur.");
+	        exit(1);
+        }
      
-    printf("message envoye au serveur. \n");
+        printf("message envoye au serveur. \n");
                 
-    /* lecture de la reponse en provenance du serveur */
-    while((longueur = read(socket_descriptor, buffer, sizeof(buffer))) > 0) {
-	printf("reponse du serveur : \n");
-	write(1,buffer,longueur);
+        /* lecture de la reponse en provenance du serveur */
+        if((longueur = read(socket_descriptor, buffer, sizeof(buffer))) > 0) {
+            //printf("long : %d", longueur);
+	        printf("reponse du serveur : \n");
+	        write(1,buffer,longueur);
+        }
+    }*/
+    
+    while(mesg != "q"){
+        printf("Veuillez saisir un message Elouan : \n");
+        scanf("%s", &mesg);
+        if ((write(socket_descriptor, mesg, strlen(mesg))) < 0) {
+	        perror("erreur : impossible d'ecrire le message destine au serveur.");
+	        exit(1);
+        }
+     
+        printf("message envoye au serveur. \n");
+                
+        /* lecture de la reponse en provenance du serveur */
+        if((longueur = read(socket_descriptor, buffer, sizeof(buffer))) > 0) {
+            //printf("long : %d", longueur);
+	        printf("reponse du serveur : \n");
+	        write(1,buffer,longueur);
+        }
     }
     
     printf("\nfin de la reception.\n");
