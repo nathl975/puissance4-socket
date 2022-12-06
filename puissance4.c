@@ -62,18 +62,19 @@ int askColumn()
 // demande la colonne à l'utilisateur et vérifie qu'elle est bien dans la grille
 int chooseColumn(char grid[][7])
 {
-    int column = askColumn();
+    int column;
     bool verif = false;
     while (!verif)
     {
-        if (column >= 0 && column <= 6 && grid[0][column] == ' ')
+        printf("test");
+        column = askColumn();
+        if (column >= 0 && column <= 6)
         {
-            verif = true;
+            verif = grid[0][column] == ' ';
         }
         else
         {
             printf("\nValeur erronnee, entrer a nouveau !\n");
-            column = askColumn();
         }
     }
     return column;
