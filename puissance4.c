@@ -65,7 +65,6 @@ int chooseColumn(char grid[][7])
     bool verif = false;
     while (!verif)
     {
-        printf("test");
         column = askColumn();
         if (column >= 0 && column <= 6)
         {
