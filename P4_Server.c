@@ -349,7 +349,7 @@ void main(int argc, char ** argv)
   struct sockaddr_in cad;  // structure pour adresse client
   int sd;                  // descripteurs de socket
   int port;                // numero de port
-  int alen;
+  unsigned int alen;
   int error;
   int visits=0;
   char  BufIN[MTU];
@@ -459,14 +459,12 @@ void main(int argc, char ** argv)
 
   printf("Debut partie jeu\n");
 
-  int x=0;
-
   // Tableau de pointeurs vers structure
   Joueur* ListeJoueur[2];
 
   // Boucle de préparation des clients, on note pour acquis le fait qu'il n'y ait que deux clients
   // Pour chaque joueur :
-  for(x=0;x<2;x++)
+  for(int x=0;x<2;x++)
   {
     // On alloue la place pour passer l'argument aux threads
     ListeJoueur[x]=malloc(sizeof(Joueur));
@@ -504,7 +502,7 @@ void main(int argc, char ** argv)
   // On lance la partie
   while(1)
   {
-    for(x=0;x<2;x++)
+    for(int x=0;x<2;x++)
     {
 
       printf("MAIN : TOUR JOUEUR %d",x+1);

@@ -1,4 +1,8 @@
+# Execution files
 puissance4
 client
 server
+*.exe
+
+# IDE
 .idea/
