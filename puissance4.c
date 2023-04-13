@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
 
 const char PLAYER_ONE = 'J';
@@ -74,7 +73,7 @@ int chooseColumn(char grid[][7])
         }
         else
         {
-            printf("\nValeur erronnee, entrer a nouveau !\n");
+            printf("\nValeur erronée, entrer a nouveau !\n");
         }
     }
     return column;
@@ -116,25 +115,25 @@ bool hasWon(char grid[][7])
             if (grid[i][j] == grid[i][j + 1] &&
                 grid[i][j] == grid[i][j + 2] &&
                 grid[i][j] == grid[i][j + 3] &&
-                grid[i][j] != ' ') // Verifie en ligne
+                grid[i][j] != ' ') // vérifie en ligne
                 return true;
 
             else if (grid[i][j] == grid[i + 1][j] &&
                      grid[i][j] == grid[i + 2][j] &&
                      grid[i][j] == grid[i + 3][j] &&
-                     grid[i][j] != ' ') // verifie en colonne
+                     grid[i][j] != ' ') // vérifie en colonne
                 return true;
 
             else if (grid[i][j] == grid[i + 1][j + 1] &&
                      grid[i][j] == grid[i + 2][j + 2] &&
                      grid[i][j] == grid[i + 3][j + 3] &&
-                     grid[i][j] != ' ') // verifie en diagonale droite
+                     grid[i][j] != ' ') // vérifie en diagonale droite
                 return true;
 
             else if (grid[i][j] == grid[i + 1][j - 1] &&
                      grid[i][j] == grid[i + 2][j - 2] &&
                      grid[i][j] == grid[i + 3][j - 3] &&
-                     grid[i][j] != ' ') // verifie en diagonale gauche
+                     grid[i][j] != ' ') // vérifie en diagonale gauche
                 return true;
         }
     }
