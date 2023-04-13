@@ -5,9 +5,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include "config.h"
+
 #define TAILLE_MAX_NOM 256
-#define BUFFER_LEN 256
-#define PORT 5000
 #define PLAYER_ONE 0
 #define PLAYER_TWO 1
 #define YELLOW_PIECE 'J'

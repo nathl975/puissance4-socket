@@ -1,0 +1,11 @@
+//
+// Created by nathan on 4/13/23.
+//
+
+#ifndef M1_RESEAUX_PUISSANCE4_CONFIG_H
+#define M1_RESEAUX_PUISSANCE4_CONFIG_H
+
+#define BUFFER_LEN 256
+#define PORT 5000
+
+#endif //M1_RESEAUX_PUISSANCE4_CONFIG_H
