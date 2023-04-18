@@ -19,7 +19,7 @@ typedef struct servent 		servent;
 
 char* colonneEvents[7] = {"COL1", "COL2", "COL3", "COL4", "COL5", "COL6", "COL7"};
 
-int demanderColonne() {
+int demanderColonne(char grille[][N_COL]) {
     int colonne = -1;
 
     while (colonne < 1 || colonne > N_COL) {
@@ -28,6 +28,14 @@ int demanderColonne() {
             // En cas d'erreur de saisie (non numérique)
             colonne = -1;
             while (getchar() != '\n');  // Vider le buffer d'entrée
+        }
+
+        if (grille[0][colonne-1] != ' ') {
+            printf("La colonne %d est déjà pleine, veuillez en choisir une autre.\n", colonne);
+            colonne = -1;
+        } else if (colonne < 1 || colonne > N_COL) {
+            printf("Le numéro de colonne entré n'est pas valide (compris entre 1 et %d).\n", colonne);
+            colonne = -1;
         }
     }
 
@@ -106,13 +114,13 @@ int main(int argc, char* argv[]) {
             printf("C'est votre tour.\n");
             printGrille(grille);
 
-            int colonne = demanderColonne();
+            int colonne = demanderColonne(grille);
             placerPiece(grille, colonne, piece);
             printGrille(grille);
 
             writeSocket(socket_descriptor, colonneEvents[colonne]);
             printf("A votre adversaire de jouer...\n");
-        } else if (event[3] > '0' && event[3] < '7') {
+        } else if (event[3] > '0' && event[3] <= '7') {
             printf("Le joueur adverse a joué la colonne %c\n", event[3]);
 
             int colonne = event[3] - 49;
@@ -129,7 +137,7 @@ int main(int argc, char* argv[]) {
 
             close(socket_descriptor);
         } else {
-            perror("Erreur évènementielle, fin de la partie.");
+            printf("Erreur évènementielle, fin de la partie.\nErreur %s.\n", event);
 
             return -1;
         }

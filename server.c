@@ -255,7 +255,5 @@ int main(int argc, char* argv[])
     finPartie(partie);
     fermerConnexionsClients(partie);
 
-    printGrille(partie->grille);
-
     return 0;
 }
