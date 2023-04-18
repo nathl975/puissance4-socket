@@ -2,16 +2,11 @@
 #include <sys/socket.h>
 #include <netdb.h>
 #include <string.h>
-#include <unistd.h>
 #include <stdlib.h>
 
 #include "config.h"
 
 #define TAILLE_MAX_NOM 256
-#define PLAYER_ONE 0
-#define PLAYER_TWO 1
-#define YELLOW_PIECE 'J'
-#define RED_PIECE 'R'
 #define VICTOIRE 1
 #define EGALITE 2
 
@@ -22,70 +17,31 @@ typedef struct servent servent;
 
 typedef struct {
     int     id;
-    char    couleur;
+    char    piece;
     int     socket;
 } Joueur;
 
 typedef struct {
     int     id,
             joueurCourant;
-    char    grille[6][7];
+    char    grille[N_LIGNES][N_COL];
     Joueur  joueurs[2];
 } Partie;
 
-/* fonctions utilisées pour afficher les jetons de la bonne couleur */
-void red()
-{
-    printf("\033[1;31m");
-}
-
-void yellow()
-{
-    printf("\033[1;33m");
-}
-
-/* affiche la grille de jeu */
-void printGrille(char grille[][7])
-{
-    printf("\n-----------------------------\n");
-    for (int i = 0; i < 6; i++)
-    {
-        printf("| ");
-        for (int j = 0; j < 7; j++)
-        {
-            grille[i][j] == YELLOW_PIECE ? yellow() : red();
-            printf("%c", grille[i][j]);
-            printf("\033[0m"); // reset couleur
-            printf(" | ");
-        }
-        printf("\n-----------------------------\n");
-    }
-}
-
 /* affiche les informations des joueurs de la partie */
 void printJoueurs(Partie *partie) {
+    printf("===================\n");
     for (int i = 0 ; i < 2 ; i++) {
         printf("Joueur %d \n", i+1);
         printf("id : %d \n", partie->joueurs[i].id);
         printf("socket : %d \n", partie->joueurs[i].socket);
-        printf("couleur : %c \n", partie->joueurs[i].couleur);
-    }
-}
-
-// initialise un tableau[6][7] avec des ' '
-void initialiserGrille(char grille[][7])
-{
-    for (int i = 0; i < 6; i++)
-    {
-        for (int j = 0; j < 7; j++)
-        {
-            grille[i][j] = ' ';
-        }
+        printf("piece : %c \n", partie->joueurs[i].piece);
+        printf("===================\n");
     }
 }
 
 // vérifie si le joueur a gagné
-int verifierVictoire(char grille[6][7])
+int verifierVictoire(char grille[N_LIGNES][N_COL])
 {
     if (grille[0][0] != ' ' && grille[0][1] != ' ' &&
         grille[0][2] != ' ' && grille[0][3] != ' ' &&
@@ -95,9 +51,9 @@ int verifierVictoire(char grille[6][7])
             printf("\nLe plateau est plein, il y a égalité\n");
             return EGALITE;
         }
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < N_LIGNES; i++)
     {
-        for (int j = 0 ; j < 7 ; j++)
+        for (int j = 0 ; j < N_COL ; j++)
             if (   (grille[i][j] == grille[i][j + 1] &&
                     grille[i][j] == grille[i][j + 2] &&
                     grille[i][j] == grille[i][j + 3] &&
@@ -129,34 +85,24 @@ void fermerConnexionsClients(Partie *partie) {
     }
 }
 
-void renvoi (int sock) {
+void debutPartie(Partie *partie) {
+    for (int i = 0; i < 2; ++i) {
+        writeSocket(partie->joueurs[i].socket, EVENT_DEBUT_PARTIE);
+        char* pieceJoueur = malloc(sizeof(partie->joueurs[i].piece));
+        *pieceJoueur = partie->joueurs[i].piece;
+    }
+    writeSocket(partie->joueurs[0].socket, EVENT_JOUEUR_JAUNE);
+    writeSocket(partie->joueurs[1].socket, EVENT_JOUEUR_ROUGE);
 
-    char buffer[BUFFER_LEN];
-    long longueur;
-   
-    if ((longueur = read(sock, buffer, sizeof(buffer))) <= 0)
-    	return;
-    
-    printf("message lu : %s \n", buffer);
-    
-    buffer[0] = 'R';
-    buffer[1] = 'E';
-    buffer[longueur] = '#';
-    buffer[longueur+1] ='\0';
-    
-    printf("message apres traitement : %s \n", buffer);
-    
-    printf("renvoi du message traite.\n");
-
-    /* mise en attente du programme pour simuler un délai de transmission */
-    sleep(3);
-    
-    write(sock,buffer,strlen(buffer)+1);
-    
-    printf("message envoyé. \n");
 }
 
-int main()
+void finPartie(Partie *partie) {
+    for (int i = 0; i < 2; ++i) {
+        writeSocket(partie->joueurs[i].socket, EVENT_FIN_PARTIE);
+    }
+}
+
+int main(int argc, char* argv[])
 {
     int 	        server_socket, 		    /* descripteur de socket serveur */
                     partieIdCpt;
@@ -164,8 +110,13 @@ int main()
 	unsigned int    longueur_adresse_courante;  /* longueur d'adresse courante d'un client */
     sockaddr_in     server_info, 		        /* structure d'adresse locale*/
 			        client_info;                /* adresse client courant */
-//    servent*	    ptr_service; 			    /* les infos récupérées sur le service de la machine */
     char 	        machine[TAILLE_MAX_NOM+1];  /* nom de la machine locale */
+
+    if (argv[1] == NULL) {
+        printf("Veuillez renseigner le port d'écoute. Fin du programme.\n");
+        return -1;
+    }
+    char*           port = argv[1];             /* port utilisé pour le serveur */
 
     /////////////////////////////////////////////////////////////
     // <<<          INITIALISATION SOCKET SERVEUR          >>> //
@@ -179,7 +130,7 @@ int main()
     /* copie de ptr_hôte vers server_info */
     server_info.sin_family		= AF_INET; 	                /* ou AF_INET */
     server_info.sin_addr.s_addr	= INADDR_ANY; 			    /* ou AF_INET */
-    server_info.sin_port        = htons(PORT);
+    server_info.sin_port        = htons(strtol(port, NULL, 10));
     
     printf("numéro de port pour la connexion au serveur : %d \n",
 		   ntohs(server_info.sin_port) /* ntohs(ptr_service->s_port) */);
@@ -224,16 +175,21 @@ int main()
             return -1;
         }
 
-        /* On initialise les données de partie */
-        partie->id = partieIdCpt;
-        partie->joueurCourant = PLAYER_ONE;
-
-        /* on initialise les joueurs */
+        /* on initialise les joueurs
+         * Premier joueur connecté :
+         * id = 0
+         * couleur = jaune */
         partie->joueurs[i].id = i == 0 ? PLAYER_ONE : PLAYER_TWO;
-        partie->joueurs[i].couleur = i == 0 ? YELLOW_PIECE : RED_PIECE;
+        partie->joueurs[i].piece = i == 0 ? YELLOW_PIECE : RED_PIECE;
 
         partieIdCpt++;
     }
+
+    /* On initialise les données de partie */
+    partie->id = partieIdCpt;
+
+    /* On part du principe que le premier joueur commence */
+    partie->joueurCourant = PLAYER_ONE;
 
     printf("Les 2 joueurs ont été trouvés, la partie peut commencer.\n");
     initialiserGrille(partie->grille);
@@ -245,15 +201,35 @@ int main()
     // <<<               DÉROULEMENT PARTIE                >>> //
     /////////////////////////////////////////////////////////////
 
-    // la partie se déroule tant qu'il n'y a pas d'égalité ni de victoire d'un des joueurs
+    debutPartie(partie);
+
     int result;
+    int cptTour = 1;
+    /* la partie se déroule tant qu'il n'y a pas d'égalité ni de victoire d'un des joueurs */
     while ((result = verifierVictoire(partie->grille)) == 0) {
-		
-		/* traitement du message */
-		printf("Début de la partie.\n");
+        char buffer[BUFFER_LEN];
 
-		renvoi(partie->joueurs[0].socket);
+        printf("Tour %d : \n", cptTour);
+        printf("Joueur : %c\n", partie->joueurs[partie->joueurCourant].piece);
 
+        int joueurCourant = partie->joueurCourant;
+        writeSocket(partie->joueurs[partie->joueurCourant].socket, EVENT_TOUR_JOUEUR);
+
+        char* colonne = readSocket(partie->joueurs[joueurCourant].socket, buffer);
+        int colonneChoisie = colonne[3] - 49;
+
+//        printf("Choix du joueur %c : %s \n", partie->joueurs[joueurCourant].piece, colonne);
+//        printf("Colonne choisie : %d \n", colonneChoisie);
+
+        placerPiece(partie->grille, colonneChoisie, partie->joueurs[joueurCourant].piece);
+        printGrille(partie->grille);
+
+        partie->joueurCourant = !joueurCourant;
+        joueurCourant = partie->joueurCourant;
+
+        writeSocket(partie->joueurs[joueurCourant].socket, buffer);
+
+        cptTour++;
     }
 
     /* On gère ici les différents cas de fin de partie :
@@ -262,17 +238,24 @@ int main()
      * default : d'après la fonction verifierVictoire et la condition du while, toute autre valeur est supposée comme une erreur */
     switch (result) {
         case 1:
-            printf("Victoire du joueur %d.\n", partie->joueurs[partie->joueurCourant].couleur);
+            printf("Victoire du joueur %c.\n", partie->joueurs[!partie->joueurCourant].piece);
+            writeSocket(partie->joueurs[!partie->joueurCourant].socket, EVENT_VICTOIRE);
+            writeSocket(partie->joueurs[partie->joueurCourant].socket, EVENT_DEFAITE);
             break;
         case 2:
             printf("Il y a égalité.\n");
+            writeSocket(partie->joueurs[!partie->joueurCourant].socket, EVENT_EGALITE);
+            writeSocket(partie->joueurs[partie->joueurCourant].socket, EVENT_EGALITE);
             break;
         default:
             printf("Erreur lors de la partie.\n");
             break;
     }
 
-    printGrille(partie->grille);
+    finPartie(partie);
     fermerConnexionsClients(partie);
+
+    printGrille(partie->grille);
+
     return 0;
 }
