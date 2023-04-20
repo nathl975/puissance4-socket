@@ -43,39 +43,60 @@ void printJoueurs(Partie *partie) {
 // vérifie si le joueur a gagné
 int verifierVictoire(char grille[N_LIGNES][N_COL])
 {
+    // Vérifier les lignes
+    for (int i = 0; i < N_LIGNES; i++) {
+        for (int j = 0; j < N_COL - 3; j++) {
+            char piece = grille[i][j];
+            if (piece != ' ' && grille[i][j+1] == piece &&
+                grille[i][j+2] == piece && grille[i][j+3] == piece) {
+                return VICTOIRE;
+            }
+        }
+    }
+
+    // Vérifier les colonnes
+    for (int i = 0; i < N_LIGNES - 3; i++) {
+        for (int j = 0; j < N_COL; j++) {
+            char piece = grille[i][j];
+            if (piece != ' ' && grille[i+1][j] == piece &&
+                grille[i+2][j] == piece && grille[i+3][j] == piece) {
+                return VICTOIRE;
+            }
+        }
+    }
+
+    // Vérifier les diagonales ascendantes
+    for (int i = 3; i < N_LIGNES; i++) {
+        for (int j = 0; j < N_COL - 3; j++) {
+            char piece = grille[i][j];
+            if (piece != ' ' && grille[i-1][j+1] == piece &&
+                grille[i-2][j+2] == piece && grille[i-3][j+3] == piece) {
+                return VICTOIRE;
+            }
+        }
+    }
+
+    // Vérifier les diagonales descendantes
+    for (int i = 0; i < N_LIGNES - 3; i++) {
+        for (int j = 0; j < N_COL - 3; j++) {
+            char piece = grille[i][j];
+            if (piece != ' ' && grille[i+1][j+1] == piece &&
+                grille[i+2][j+2] == piece && grille[i+3][j+3] == piece) {
+                return VICTOIRE;
+            }
+        }
+    }
+
+    // Vérifier l'égalité : il y a égalité quand la grille est pleine et qu'aucun joueur n'a remporté le match
     if (grille[0][0] != ' ' && grille[0][1] != ' ' &&
         grille[0][2] != ' ' && grille[0][3] != ' ' &&
         grille[0][4] != ' ' && grille[0][5] != ' ' &&
         grille[0][6] != ' ')
-        {
-            printf("\nLe plateau est plein, il y a égalité\n");
-            return EGALITE;
-        }
-    for (int i = 0; i < N_LIGNES; i++)
     {
-        for (int j = 0 ; j < N_COL ; j++)
-            if (   (grille[i][j] == grille[i][j + 1] &&
-                    grille[i][j] == grille[i][j + 2] &&
-                    grille[i][j] == grille[i][j + 3] &&
-                    grille[i][j] != ' ') // Vérifie en ligne
-                ||
-                    (grille[i][j] == grille[i + 1][j] &&
-                     grille[i][j] == grille[i + 2][j] &&
-                     grille[i][j] == grille[i + 3][j] &&
-                     grille[i][j] != ' ') // vérifie en colonne
-                ||
-                    (grille[i][j] == grille[i + 1][j + 1] &&
-                     grille[i][j] == grille[i + 2][j + 2] &&
-                     grille[i][j] == grille[i + 3][j + 3] &&
-                     grille[i][j] != ' ') // vérifie en diagonale droite
-                ||
-                    (grille[i][j] == grille[i + 1][j - 1] &&
-                     grille[i][j] == grille[i + 2][j - 2] &&
-                     grille[i][j] == grille[i + 3][j - 3] &&
-                     grille[i][j] != ' ') // vérifie en diagonale gauche
-                    )
-                return VICTOIRE;
+        printf("\nLe plateau est plein, il y a égalité\n");
+        return EGALITE;
     }
+
     return 0;
 }
 
