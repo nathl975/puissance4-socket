@@ -2,11 +2,7 @@
 Client a lancer apres le serveur avec la commande :
 client <adresse-serveur> <message-a-transmettre>
 ------------------------------------------------------------*/
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/socket.h>
 #include <netdb.h>
-#include <string.h>
 
 #include "config.h"
 
@@ -48,6 +44,11 @@ int main(int argc, char* argv[]) {
     hostent *	ptr_host; 		    /* info sur une machine hôte */
     // servent *	ptr_service; 		/* info sur service */
     char 	    buffer[BUFFER_LEN];
+
+    if (argv[1] == NULL) {
+        printf("Veuillez renseigner le port d'écoute. Fin du programme.\n");
+        exit(EXIT_FAILURE);
+    }
     char*       port = argv[1];     /* port utilisé pour la connexion */
 
     /////////////////////////////////////////////////////////////
@@ -55,8 +56,13 @@ int main(int argc, char* argv[]) {
     /////////////////////////////////////////////////////////////
 
     if ((ptr_host = gethostbyname(HOST)) == NULL) {
-        perror("erreur : impossible de trouver le serveur a partir de son adresse.");
-        exit(1);
+        perror("erreur: impossible de trouver le serveur a partir de son adresse.");
+        exit(EXIT_FAILURE);
+    }
+
+    if (argc != 2) {
+        printf("Le nombre d'arguments passés est invalide.");
+        exit(EXIT_FAILURE);
     }
     
     /* copie caractère par caractère des infos de ptr_host vers adresse_locale */
@@ -70,13 +76,13 @@ int main(int argc, char* argv[]) {
     /* creation du socket */
     if ((socket_descriptor = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("erreur : impossible de créer la socket de connexion avec le serveur.");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     
     /* tentative de connexion au serveur dont les infos sont dans adresse_locale */
     if ((connect(socket_descriptor, (sockaddr*)(&adresse_locale), sizeof(adresse_locale))) < 0) {
         perror("erreur : impossible de se connecter au serveur.");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     
     printf("connexion établie avec le serveur. \n");
@@ -120,7 +126,7 @@ int main(int argc, char* argv[]) {
 
             writeSocket(socket_descriptor, colonneEvents[colonne]);
             printf("A votre adversaire de jouer...\n");
-        } else if (event[3] > '0' && event[3] <= '7') {
+        } else if (event[3] >= '1' && event[3] <= '7') {
             printf("Le joueur adverse a joué la colonne %c\n", event[3]);
 
             int colonne = event[3] - 49;
@@ -139,9 +145,9 @@ int main(int argc, char* argv[]) {
         } else {
             printf("Erreur évènementielle, fin de la partie.\nErreur %s.\n", event);
 
-            return -1;
+            exit(EXIT_FAILURE);
         }
     }
 
-    return 0;
+    exit(EXIT_SUCCESS);
 }
