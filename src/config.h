@@ -1,11 +1,15 @@
 /*
  * Fichier définissant les variables de configuration et
  */
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <string.h>
+#include <unistd.h>
 
 #ifndef M1_RESEAUX_PUISSANCE4_CONFIG_H
 #define M1_RESEAUX_PUISSANCE4_CONFIG_H
 
-#include <unistd.h>
 
 #define BUFFER_LEN 256
 #define DELAY_MS 300
@@ -34,7 +38,7 @@
 void writeSocket(int sd, char* message) {
 //    printf("écriture de %s\n", message);
     if ((send(sd, message, strlen(message), 0)) < 0) {
-        perror("Erreur d'envoi sur le socket");
+        perror("erreur: envoi sur le socket impossible");
         exit(EXIT_FAILURE);
     }
     /* nombre de millisecondes * 1000 pour convertir en microsecondes
@@ -44,9 +48,8 @@ void writeSocket(int sd, char* message) {
 }
 
 char* readSocket(int sd, char * buffer) {
-    long longueur;
-    if((longueur = read(sd, buffer, sizeof(buffer))) < 0) {
-        perror("Erreur de réception sur le socket");
+    if(read(sd, buffer, sizeof(buffer)) < 0) {
+        perror("erreur: réception sur le socket impossible");
         exit(EXIT_FAILURE);
     }
 
