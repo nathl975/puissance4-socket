@@ -21,7 +21,7 @@ git clone https://github.com/nathl975/puissance4-socket.git
 ```
 Il faut maintenant compiler les sources du projet, pour le client et le serveur en utilisant la commande suivante.
 ```shell
-gcc client.c -o client ; gcc server.c -o server
+gcc src/client.c -o client ; gcc -pthread src/server.c -o server
 ```
 Une fois que le client et le serveur sont compilés, vous pouvez maintenant jouer.
 
