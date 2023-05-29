@@ -36,6 +36,9 @@ Pour connecter un client, lancer le programme client en spécifiant le même por
 ```
 Une fois la partie lancée, le jeu se déroule comme _Puissance 4_.
 
+À noter qu'il existe une fonction de debug au programme, en ajoutant 1 en 3e argument à l'exécution.
+Celle-ci permet d'avoir davantage d'informations sur l'exécution des parties.
+
 ## Arborescence
 ## src
 Ce répertoire contient les sources du projet, notamment les fichiers à compiler pour l'exécution

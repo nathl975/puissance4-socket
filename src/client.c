@@ -45,11 +45,19 @@ int main(int argc, char* argv[]) {
     // servent *	ptr_service; 		/* info sur service */
     char 	    buffer[BUFFER_LEN];
 
+    long debug = 0;
+
+
     if (argv[1] == NULL) {
         printf("Veuillez renseigner le port d'écoute. Fin du programme.\n");
         exit(EXIT_FAILURE);
     }
     char*       port = argv[1];     /* port utilisé pour la connexion */
+
+
+    if (argc == 3) {
+        debug = strtol(argv[2], NULL, 10);
+    }
 
     /////////////////////////////////////////////////////////////
     // <<<          INITIALISATION SOCKET CLIENT           >>> //
@@ -60,7 +68,7 @@ int main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    if (argc != 2) {
+    if (argc != 2 && argc != 3) {
         printf("Le nombre d'arguments passés est invalide.");
         exit(EXIT_FAILURE);
     }
@@ -75,17 +83,17 @@ int main(int argc, char* argv[]) {
     
     /* creation du socket */
     if ((socket_descriptor = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        perror("erreur : impossible de créer la socket de connexion avec le serveur.");
+        perror("erreur : impossible de créer la socket de connexion avec le serveur");
         exit(EXIT_FAILURE);
     }
     
     /* tentative de connexion au serveur dont les infos sont dans adresse_locale */
     if ((connect(socket_descriptor, (sockaddr*)(&adresse_locale), sizeof(adresse_locale))) < 0) {
-        perror("erreur : impossible de se connecter au serveur.");
+        perror("erreur : impossible de se connecter au serveur");
         exit(EXIT_FAILURE);
     }
     
-    printf("connexion établie avec le serveur. \n");
+    printf("Connexion établie avec le serveur.\n");
 
     /////////////////////////////////////////////////////////////
     // <<<        GESTION DES ÉVÉNEMENTS DE PARTIE         >>> //
@@ -99,7 +107,9 @@ int main(int argc, char* argv[]) {
     while (strcmp(event, EVENT_FIN_PARTIE)) {
         event = readSocket(socket_descriptor, buffer);
 
-//        printf("Event : %s\n", event);
+        if (debug) {
+            printf("Event : %s\n", event);
+        }
 
         if (strcmp(event, EVENT_DEBUT_PARTIE) == 0) {
             initialiserGrille(grille);
@@ -142,8 +152,10 @@ int main(int argc, char* argv[]) {
             printf("Fin de la partie, déconnexion en cours...\n");
 
             close(socket_descriptor);
+        } else if (strcmp(event, EVENT_TEST) == 0) {
+            printf("this is a test.\n");
         } else {
-            printf("Erreur évènementielle, fin de la partie.\nErreur %s.\n", event);
+            printf("Erreur évènementielle, fin de la partie: %s\n", event);
 
             exit(EXIT_FAILURE);
         }
