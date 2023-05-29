@@ -152,8 +152,6 @@ int main(int argc, char* argv[]) {
             printf("Fin de la partie, déconnexion en cours...\n");
 
             close(socket_descriptor);
-        } else if (strcmp(event, EVENT_TEST) == 0) {
-            printf("this is a test.\n");
         } else {
             printf("Erreur évènementielle, fin de la partie: %s\n", event);
 
