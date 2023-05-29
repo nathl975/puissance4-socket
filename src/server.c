@@ -277,7 +277,7 @@ int main(int argc, char *argv[]) {
          */
         Joueur joueur;
         joueur.socket = current_socket;
-        joueur.id = nbConnexions % 2 == 0 ? 0 : 1;
+        joueur.id = nbConnexions % 2 == 0 ? PLAYER_ONE : PLAYER_TWO;
         joueur.piece = nbConnexions % 2 == 0 ? YELLOW_PIECE : RED_PIECE;
         joueurs[nbConnexions] = joueur;
 
