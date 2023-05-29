@@ -52,8 +52,8 @@ Ce répertoire contient des fichiers de documentation ou d'exemple que nous avon
 * [P4_Server.c](docs/P4_Server.c)
 * [P4_Client.c](docs/P4_Client.c)
 
-Ces 2 fichiers sont des exemples que nous avons trouvé sur [GitHub](https://github.com/nikanorivanovitch/Puissance-4) d'un jeu de _Puissance 4_ rédigé de manière similaire à nos consignes.
+Ces 2 fichiers sont des exemples que nous avons trouvés sur [GitHub](https://github.com/nikanorivanovitch/Puissance-4) d'un jeu de _Puissance 4_ rédigé de manière similaire à nos consignes.
 Nous nous en sommes donc inspiré pour comprendre comment faire fonctionner le jeu.
 * [puissance4.c](docs/puissance4.c)
 
-Ce dernier fichier est un exemple de _Puissance 4_ que j'ai rédigé à l'IUT et que nous avons utilisé pour créer cette version multijoueur. Ce fichier est compilable et jouable mais ne s'exécute que dans un seul Terminal.
+Ce dernier fichier est un exemple de _Puissance 4_ que j'ai rédigé à l'IUT et que nous avons utilisé pour créer cette version multijoueur. Ce fichier est compilable et jouable, mais ne s'exécute que dans un seul Terminal.
