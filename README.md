@@ -26,7 +26,8 @@ gcc src/client.c -o client ; gcc -pthread src/server.c -o server
 Une fois que le client et le serveur sont compilés, vous pouvez maintenant jouer.
 
 ## Utilisation
-Pour jouer, il faut lancer le serveur sur un port non-utilisé (ex: 5000). Ensuite, le serveur va attendre que 2 clients se connectent pour lancer la partie.
+Pour jouer, il faut lancer le serveur sur un port non-utilisé (ex: 5000). Ensuite, le serveur va attendre que 2 clients se connectent pour lancer une première partie.
+Ensuite le lancement s'effectue par paires de 2 joueurs, le premier attend toujours qu'un deuxième se connecte, une fois celà la partie se lance automatiquement.
 ```shell
 ./server 5000
 ```
@@ -38,6 +39,12 @@ Une fois la partie lancée, le jeu se déroule comme _Puissance 4_.
 
 À noter qu'il existe une fonction de debug au programme, en ajoutant 1 en 3e argument à l'exécution.
 Celle-ci permet d'avoir davantage d'informations sur l'exécution des parties.
+```shell
+./server 5000 1
+```
+```shell
+./client 5000 1
+```
 
 ## Arborescence
 ## src
@@ -53,7 +60,9 @@ Ce répertoire contient des fichiers de documentation ou d'exemple que nous avon
 * [P4_Client.c](docs/P4_Client.c)
 
 Ces 2 fichiers sont des exemples que nous avons trouvés sur [GitHub](https://github.com/nikanorivanovitch/Puissance-4) d'un jeu de _Puissance 4_ rédigé de manière similaire à nos consignes.
-Nous nous en sommes donc inspiré pour comprendre comment faire fonctionner le jeu.
+Nous nous en sommes donc inspiré pour comprendre comment faire fonctionner le jeu. Notre fonctionnement reste tout de même largement différent du leur, notamment sur l'exécution des threads,
+nous gérons un thread pour 2 joueurs et ainsi un par partie là où leur gestion se fait par joueur et donc nécessite des sémaphores pour communiquer.
 * [puissance4.c](docs/puissance4.c)
 
-Ce dernier fichier est un exemple de _Puissance 4_ que j'ai rédigé à l'IUT et que nous avons utilisé pour créer cette version multijoueur. Ce fichier est compilable et jouable, mais ne s'exécute que dans un seul Terminal.
+Ce dernier fichier est un exemple de _Puissance 4_ qui a été rédigé à l'IUT par Nathan et que nous avons utilisé pour créer cette version multijoueur.
+Ce fichier est compilable et jouable, mais ne s'exécute que dans un seul Terminal. Il nous a été utile pour récupérer la logique du jeu _Puissance 4_ (victoire, égalité...).
