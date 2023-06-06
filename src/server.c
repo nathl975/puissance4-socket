@@ -4,8 +4,6 @@
 #include "config.h"
 
 #define TAILLE_MAX_NOM 256
-#define VICTOIRE 1
-#define EGALITE 2
 #define NB_CLIENTS 4
 
 typedef struct sockaddr sockaddr;
@@ -39,64 +37,6 @@ void printJoueurs(Partie *partie) {
         printf("piece : %c \n", partie->joueurs[i].piece);
         printf("===================\n");
     }
-}
-
-// vérifie si le joueur a gagné
-int verifierVictoire(char grille[N_LIGNES][N_COL]) {
-    // Vérifier les lignes
-    for (int i = 0; i < N_LIGNES; i++) {
-        for (int j = 0; j < N_COL - 3; j++) {
-            char piece = grille[i][j];
-            if (piece != ' ' && grille[i][j + 1] == piece &&
-                grille[i][j + 2] == piece && grille[i][j + 3] == piece) {
-                return VICTOIRE;
-            }
-        }
-    }
-
-    // Vérifier les colonnes
-    for (int i = 0; i < N_LIGNES - 3; i++) {
-        for (int j = 0; j < N_COL; j++) {
-            char piece = grille[i][j];
-            if (piece != ' ' && grille[i + 1][j] == piece &&
-                grille[i + 2][j] == piece && grille[i + 3][j] == piece) {
-                return VICTOIRE;
-            }
-        }
-    }
-
-    // Vérifier les diagonales ascendantes
-    for (int i = 3; i < N_LIGNES; i++) {
-        for (int j = 0; j < N_COL - 3; j++) {
-            char piece = grille[i][j];
-            if (piece != ' ' && grille[i - 1][j + 1] == piece &&
-                grille[i - 2][j + 2] == piece && grille[i - 3][j + 3] == piece) {
-                return VICTOIRE;
-            }
-        }
-    }
-
-    // Vérifier les diagonales descendantes
-    for (int i = 0; i < N_LIGNES - 3; i++) {
-        for (int j = 0; j < N_COL - 3; j++) {
-            char piece = grille[i][j];
-            if (piece != ' ' && grille[i + 1][j + 1] == piece &&
-                grille[i + 2][j + 2] == piece && grille[i + 3][j + 3] == piece) {
-                return VICTOIRE;
-            }
-        }
-    }
-
-    // Vérifier l'égalité : il y a égalité quand la grille est pleine et qu'aucun joueur n'a remporté le match
-    if (grille[0][0] != ' ' && grille[0][1] != ' ' &&
-        grille[0][2] != ' ' && grille[0][3] != ' ' &&
-        grille[0][4] != ' ' && grille[0][5] != ' ' &&
-        grille[0][6] != ' ') {
-        printf("\nLe plateau est plein, il y a égalité\n");
-        return EGALITE;
-    }
-
-    return 0;
 }
 
 void fermerConnexionsClients(Partie *partie) {
@@ -316,7 +256,7 @@ int main(int argc, char *argv[]) {
             // <<<               DÉROULEMENT PARTIE                >>> //
             /////////////////////////////////////////////////////////////
 
-            printf("Début de la partie %d\n", partieIdCpt);
+            printf("Début de la partie %d\n", partie->id);
             pthread_create(&partie->thread, NULL, jouerPartie, (void *) partie);
             if (debug)
                 printf("thread créé\n");

@@ -26,11 +26,11 @@ int demanderColonne(char grille[][N_COL]) {
             while (getchar() != '\n');  // Vider le buffer d'entrée
         }
 
-        if (grille[0][colonne-1] != ' ') {
-            printf("La colonne %d est déjà pleine, veuillez en choisir une autre.\n", colonne);
+        if (colonne < 1 || colonne > N_COL) {
+            printf("Le numéro de colonne entré n'est pas valide (compris entre 1 et %d).\n", N_COL);
             colonne = -1;
-        } else if (colonne < 1 || colonne > N_COL) {
-            printf("Le numéro de colonne entré n'est pas valide (compris entre 1 et %d).\n", colonne);
+        } else if (grille[0][colonne-1] != ' ') {
+            printf("La colonne %d est déjà pleine, veuillez en choisir une autre.\n", colonne);
             colonne = -1;
         }
     }
@@ -135,7 +135,8 @@ int main(int argc, char* argv[]) {
             printGrille(grille);
 
             writeSocket(socket_descriptor, colonneEvents[colonne]);
-            printf("A votre adversaire de jouer...\n");
+            if (!verifierVictoire(grille))
+                printf("A votre adversaire de jouer...\n");
         } else if (event[3] >= '1' && event[3] <= '7') {
             printf("Le joueur adverse a joué la colonne %c\n", event[3]);
 
