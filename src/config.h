@@ -10,18 +10,22 @@
 #ifndef M1_RESEAUX_PUISSANCE4_CONFIG_H
 #define M1_RESEAUX_PUISSANCE4_CONFIG_H
 
-
+/* Paramètres du socket */
 #define BUFFER_LEN 256
 #define DELAY_MS 300
 
+/* Paramètres de la grille */
 #define N_LIGNES 6
 #define N_COL 7
 
+/* Paramètres des joueurs */
 #define YELLOW_PIECE 'J'
 #define RED_PIECE 'R'
 
 #define PLAYER_ONE 0
 #define PLAYER_TWO 1
+
+/* Évènements */
 #define EVENT_JOUEUR_JAUNE "JAUN"
 #define EVENT_JOUEUR_ROUGE "ROUG"
 
@@ -36,7 +40,6 @@
 
 
 void writeSocket(int sd, char* message) {
-//    printf("écriture de %s\n", message);
     if ((send(sd, message, strlen(message), 0)) < 0) {
         perror("erreur: envoi sur le socket impossible");
         exit(EXIT_FAILURE);

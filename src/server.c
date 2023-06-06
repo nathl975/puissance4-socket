@@ -117,6 +117,7 @@ void finPartie(Partie *partie) {
     for (int i = 0; i < 2; ++i) {
         writeSocket(partie->joueurs[i].socket, EVENT_FIN_PARTIE);
     }
+    printf("Fin de la partie %d\n", partie->id);
 }
 
 void *jouerPartie(void *data) {
@@ -137,8 +138,8 @@ void *jouerPartie(void *data) {
         char buffer[BUFFER_LEN];
 
         if (debug) {
-            printf("Tour %d : \n", cptTour);
-            printf("Joueur : %c\n", partie->joueurs[partie->joueurCourant].piece);
+            printf("Partie %d, Tour %d : \n", partie->id, cptTour);
+            printf("Partie %d, Joueur : %c\n", partie->id, partie->joueurs[partie->joueurCourant].piece);
         }
 
         int joueurCourant = partie->joueurCourant;
@@ -147,12 +148,16 @@ void *jouerPartie(void *data) {
         char *colonne = readSocket(partie->joueurs[joueurCourant].socket, buffer);
         int colonneChoisie = colonne[3] - 49;
 
-//        printf("Choix du joueur %c : %s \n", partie->joueurs[joueurCourant].piece, colonne);
-//        printf("Colonne choisie : %d \n", colonneChoisie);
+        if (debug) {
+            printf("Partie %d, Choix du joueur %c : %s \n", partie->id, partie->joueurs[joueurCourant].piece, colonne);
+            printf("Partie %d, Colonne choisie : %d \n", partie->id, colonneChoisie);
+        }
 
         placerPiece(partie->grille, colonneChoisie, partie->joueurs[joueurCourant].piece);
-        if (debug)
+        if (debug) {
+            printf("Partie %d, Grille :\n", partie->id);
             printGrille(partie->grille);
+        }
 
         partie->joueurCourant = !joueurCourant;
         joueurCourant = partie->joueurCourant;
@@ -165,20 +170,24 @@ void *jouerPartie(void *data) {
     /* On gère ici les différents cas de fin de partie :
      * 1 : un des 2 joueurs a gagné
      * 2 : le tableau est plein, il y a donc égalité
-     * default : d'après la fonction verifierVictoire et la condition du while, toute autre valeur est supposée comme une erreur */
+     * default : d'après la fonction verifierVictoire et la condition du while, toute autre valeur est supposée comme une erreur
+     */
     switch (result) {
         case 1:
-            printf("Victoire du joueur %c.\n", partie->joueurs[!partie->joueurCourant].piece);
+            if (debug)
+                printf("Partie %d: victoire du joueur %c.\n", partie->id, partie->joueurs[!partie->joueurCourant].piece);
             writeSocket(partie->joueurs[!partie->joueurCourant].socket, EVENT_VICTOIRE);
             writeSocket(partie->joueurs[partie->joueurCourant].socket, EVENT_DEFAITE);
             break;
         case 2:
-            printf("Il y a égalité.\n");
+            if (debug)
+                printf("Partie %d: égalité.\n", partie->id);
             writeSocket(partie->joueurs[!partie->joueurCourant].socket, EVENT_EGALITE);
             writeSocket(partie->joueurs[partie->joueurCourant].socket, EVENT_EGALITE);
             break;
         default:
-            printf("Erreur lors de la partie.\n");
+            if (debug)
+                printf("Partie %d: erreur lors de la partie.\n", partie->id);
             break;
     }
 
@@ -206,6 +215,7 @@ int main(int argc, char *argv[]) {
     if (argc == 3) {
         debug = strtol(argv[2], NULL, 10);
     }
+
     /////////////////////////////////////////////////////////////
     // <<<          INITIALISATION SOCKET SERVEUR          >>> //
     /////////////////////////////////////////////////////////////
@@ -266,8 +276,8 @@ int main(int argc, char *argv[]) {
         if ((current_socket = accept(server_socket, (sockaddr *) (&client_info), &longueur_adresse_courante)) < 1) {
             printf("accept failed %d \n", current_socket);
             return -1;
-        } else if (debug) {
-            printf("Un nouveau joueur vient de se connecter\n");
+        } else {
+            printf("Connexion joueur\n");
         }
 
         /* on initialise un nouveau joueur
@@ -295,8 +305,6 @@ int main(int argc, char *argv[]) {
             partie->joueurCourant = partie->joueurs[0].id;
             partieIdCpt++;
 
-            if (debug)
-                printf("Les 2 joueurs ont été trouvés, la partie peut commencer.\n");
             initialiserGrille(partie->grille);
 
             if (debug) {
