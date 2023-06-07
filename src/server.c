@@ -89,13 +89,13 @@ void *jouerPartie(void *data) {
         int colonneChoisie = colonne[3] - 49;
 
         if (debug) {
-            printf("Partie %d, Choix du joueur %c : %s \n", partie->id, partie->joueurs[joueurCourant].piece, colonne);
-            printf("Partie %d, Colonne choisie : %d \n", partie->id, colonneChoisie);
+            printf("Partie %d: Choix du joueur %c : %s \n", partie->id, partie->joueurs[joueurCourant].piece, colonne);
+            printf("Partie %d: Colonne choisie : %d \n", partie->id, colonneChoisie);
         }
 
         placerPiece(partie->grille, colonneChoisie, partie->joueurs[joueurCourant].piece);
         if (debug) {
-            printf("Partie %d, Grille :\n", partie->id);
+            printf("Partie %d: Grille :\n", partie->id);
             printGrille(partie->grille);
         }
 
@@ -259,10 +259,10 @@ int main(int argc, char *argv[]) {
             printf("Début de la partie %d\n", partie->id);
             pthread_create(&partie->thread, NULL, jouerPartie, (void *) partie);
             if (debug)
-                printf("thread créé\n");
+                printf("Partie %d: thread créé\n", partie->id);
             pthread_detach(partie->thread);
             if (debug)
-                printf("thread détaché\n");
+                printf("Partie %d: thread détaché\n", partie->id);
         }
     }
 }

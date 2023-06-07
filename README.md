@@ -1,5 +1,5 @@
 # M1-Reseaux-Puissance4
-[Nathan LETOURNEL](https://www.github.com/nathl975), Elouan PRIME - M1 MIAGE Alternant
+[Nathan LETOURNEL](https://www.github.com/nathl975), [Elouan PRIME](https://www.github.com/ElouanP) - M1 MIAGE Alternant
 
 ## Description
 Ce projet est un jeu _Puissance 4_ programmé en C utilisant l'architecture client-serveur.
